@@ -1,9 +1,9 @@
 # Nova Manual QA Test Suite
 
 ## Release Snapshot
-- App version: `0.3.1`
-- Stage baseline: `de6b5fe`
-- This suite covers the current Nova pilot after the advisory-output refactor, page lifecycle tightening, welcome-screen polish, and production shadow gating.
+- App version: `0.3.2`
+- Stage baseline: `7367959`
+- This suite covers the current Nova pilot after the advisory-output refactor, page lifecycle tightening, welcome-screen polish, production shadow gating, score-chart rollout, and replay read-only hardening.
 
 ## Scope
 - welcome dialog
@@ -116,15 +116,17 @@
 - Steps:
   1. Try editing vendor fields.
   2. Try editing jobs and extracted review cards.
-  3. Open advanced detail.
-  4. Open a generated page if pages exist.
-  5. Click `Vendor Analysis`.
+  3. Try upload, remove, or replace photos.
+  4. Open advanced detail.
+  5. Open a generated page if pages exist.
+  6. Click `Vendor Analysis`.
 - Expected:
   1. Workspace inputs are locked.
   2. Review edit actions are locked.
-  3. Advanced detail still opens.
-  4. Generated page open actions still work.
-  5. `Vendor Analysis` exits simulation mode and starts a fresh editable run.
+  3. Photo actions stay locked and no new files are accepted.
+  4. Advanced detail still opens.
+  5. Generated page open actions still work.
+  6. `Vendor Analysis` exits simulation mode and starts a fresh editable run.
 
 ### QA-007 Start CTA opens the editable workspace
 - Area: Welcome
@@ -239,11 +241,13 @@
   2. Edit another event.
   3. Save the change.
   4. Refresh or replay the session.
+  5. On mobile width, review the confirmed-events area.
 - Expected:
   1. Review cards update cleanly.
   2. Save state moves through `Saving...` and then `Saved`.
   3. `Total`, `Confirmed`, and `Target` metrics update correctly.
   4. Persisted state restores without drift after refresh or replay.
+  5. On mobile, confirmed events can stay collapsed under one compact label row until opened.
 
 ### QA-016 Guided tips appear by section and localize
 - Area: Review and Results
@@ -271,7 +275,8 @@
   2. The hero reads as a business mirror, not a raw analytics dump.
   3. `What clients see` chips are visible.
   4. Only the three headline scores are shown initially.
-  5. Deeper sections stay collapsed behind reveal rows by default.
+  5. Each headline score includes a compact horizontal score bar below the number.
+  6. Deeper sections stay collapsed behind reveal rows by default.
 
 ### QA-018 Progressive reveal sections open in sequence
 - Area: Results
@@ -287,6 +292,8 @@
   2. The reveal row label matches the section content.
   3. `How Nova calculated this` appears only in the detailed-score section.
   4. Detailed technical scores stay below the main advisory read.
+  5. Numeric detailed score cards include compact horizontal bars.
+  6. `Top signal` stays text-only with no bar.
 
 ### QA-019 Advanced detail toggle works
 - Area: Results
@@ -300,7 +307,8 @@
   1. Full signal detail remains hidden by default.
   2. Pilot feedback gate appears before the deeper detail on eligible runs.
   3. `What is helping and what is missing` appears once advanced detail is open.
-  4. Hiding returns the output to the compact advisory state.
+  4. `Keyword edge` shows an overall score bar plus ranked keyword bars when keyword signals exist.
+  5. Hiding returns the output to the compact advisory state.
 
 ### QA-020 Shadow compare works on local or stage when enabled
 - Area: Advanced detail
@@ -406,9 +414,11 @@
 - Expected:
   1. Shared route loads from the share code.
   2. Advisory sections are visible in this order: identity, headline scores, confirmed work, why this result, growth insight, risk/gap, generated pages.
-  3. Generated pages show title, slug, and short context only.
-  4. Full-suite follow-up block appears at the bottom.
-  5. Detailed scores remain hidden until the advanced toggle is opened.
+  3. Headline scores include the same compact score bars shown in the workspace.
+  4. Generated pages show title, slug, and short context only.
+  5. `Keyword edge` bars appear in shared advanced detail when keyword signals exist.
+  6. Full-suite follow-up block appears at the bottom.
+  7. Detailed scores remain hidden until the advanced toggle is opened.
 
 ### QA-028 PDF downloads directly and matches the shared result
 - Area: Share and PDF
@@ -422,7 +432,9 @@
   2. No blank or black tab remains open.
   3. PDF uses the same overall theme, hierarchy, and section order as the shared result.
   4. Share code and share URL appear near the top.
-  5. Generated pages in the PDF show title, slug, and short context only, not full page bodies.
+  5. Headline and detailed numeric scores include matching compact score bars.
+  6. `Keyword edge` bars appear in the PDF when keyword signals exist.
+  7. Generated pages in the PDF show title, slug, and short context only, not full page bodies.
 
 ### QA-029 Full-suite submit works for editable runs
 - Area: Final CTA
@@ -669,6 +681,19 @@
   1. Detailed score cards remain hidden by default.
   2. They appear only under `The scores behind the result`.
   3. Main advisory read stays primary.
+
+### CC-029 Replay write attempts stay blocked
+- Area: Replay
+- Expected:
+  1. Replay mode ignores any attempt to edit business fields, jobs, notes, photos, or review cards.
+  2. Replay mode does not start analysis or page generation.
+  3. Replay mode does not submit the full-suite form.
+
+### CC-030 Keyword edge with no keyword signals
+- Area: Advanced detail and share
+- Expected:
+  1. No broken chart shell appears when keyword signals are absent.
+  2. The surrounding detail layout remains clean and readable.
 
 ## Sign-off
 - welcome passed
